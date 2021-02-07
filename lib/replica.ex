@@ -3,7 +3,7 @@
 
 defmodule Replica do
 
-def start config, database do
+def start config, _database do
   Debug.info(config, "Starting Replica#{config.node_num}")
 end # start
 

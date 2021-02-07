@@ -3,7 +3,7 @@
 
 defmodule Acceptor do
 
-def start config, database do
+def start config do
   Debug.info(config, "Starting Acceptor#{config.node_num}")
 end # start
 
