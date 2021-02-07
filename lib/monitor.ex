@@ -5,7 +5,7 @@
 defmodule Monitor do
 
 # setters for Monitor state variables
-def clock(state, v), do: 
+def clock(state, v), do:
   Map.put(state, :clock, v)
 
 def requests(state, i, v), do:
@@ -136,5 +136,3 @@ def next(config, state) do
 end # next
 
 end # Monitor
-
-

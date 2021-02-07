@@ -1,15 +1,15 @@
 
-# distributed algorithms, n.dulay, 29 jan 21 
+# distributed algorithms, n.dulay, 29 jan 21
 # coursework, paxos made moderately complex
 
-SERVERS  = 5
-CLIENTS  = 5
+SERVERS  = 3 # 5
+CLIENTS  = 3 # 5
 CONFIG   = default
 DEBUG    = 0
 MAX_TIME = 15000
 
 START    = Multipaxos.start
-HOST	:= 127.0.0.1
+HOST    := 127.0.0.1
 
 # --------------------------------------------------------------------
 
@@ -50,4 +50,3 @@ clean:
 ps:
 	@echo ------------------------------------------------------------
 	epmd -names
-

@@ -43,4 +43,3 @@ defp start(:cluster_start, config) do
 end # start
 
 end # Multipaxos
-
