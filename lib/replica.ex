@@ -7,4 +7,4 @@ def start config, database do
   Debug.info(config, "Starting Replica#{config.node_num}")
 end # start
 
-end # Server
+end # Replica
