@@ -2,16 +2,18 @@
 # cyprienroche 12 feb 2021
 
 defmodule ScoutState do
-  @enforce_keys [ :leader, :acceptors, :ballot_num ]
+  @enforce_keys [ :config, :leader, :acceptors, :ballot_num ]
   defstruct(
+    config: Map.new,
     leader: nil,
     acceptors: MapSet.new,
     ballot_num: nil,
     waitfor: MapSet.new,
     pvals: MapSet.new)
 
-	def new(leader, acceptors, ballot_num) do
+	def new(config, leader, acceptors, ballot_num) do
 		%ScoutState{
+      config: config,
       leader: leader,
       acceptors: acceptors,
       ballot_num: ballot_num,
@@ -22,9 +24,10 @@ end # ScoutState
 
 defmodule Scout do
 
-def start leader, acceptors, ballot_num do
+def start config, leader, acceptors, ballot_num do
+  send config.monitor, { :SCOUT_SPAWNED, config.node_num }
   # send p1a request to acceptors
-  next ScoutState.new(leader, acceptors, ballot_num)
+  next ScoutState.new(config, leader, acceptors, ballot_num)
 end # start
 
 defp next state do

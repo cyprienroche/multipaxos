@@ -13,6 +13,14 @@ defmodule AcceptorState do
       config: config }
 	end # new
 
+  def adopt(state, ballot_num) do
+    %{ state | ballot_num: ballot_num }
+  end # adopt
+
+  def accept(state, pvalue) do
+    %{ state | accepted: MapSet.put(state.accepted, pvalue) }
+  end # accept
+
 end # AcceptorState
 
 defmodule Acceptor do
@@ -22,12 +30,24 @@ def start config do
 end # start
 
 defp next state do
-  receive do
-    { :P1A, _from, ballot_num } ->
-      ballot_num
+  state = receive do
+    { :P1A, from, ballot_num } ->
+      state = if ballot_num > state.ballot_num do
+        AcceptorState.adopt(state, ballot_num)
+      else
+        state
+      end # if
+      send from, { :P1B, self(), state.ballot_num, state.accepted }
+      state
 
-    { :P2A, _from, { ballot_num, _, _ } = pvalue } ->
-      pvalue
+    { :P2A, from, { ballot_num, _from, _cmd } = pvalue } ->
+      state = if ballot_num == state.ballot_num do
+        AcceptorState.adopt(state, pvalue)
+      else
+        state
+      end # if
+      send from, { :P2B, self(), state.ballot_num }
+      state
   end # receive
 
   next state
