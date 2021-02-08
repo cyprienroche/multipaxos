@@ -26,7 +26,7 @@ def params :default do
   n_accounts:   100,		# number of active bank accounts
   max_amount:   1_000,		# max amount moved between accounts
 
-  print_after:  1_000,		# print transaction log summary every print_after msecs
+  print_after:  20_000,		# print transaction log summary every print_after msecs 1_000
 
   crash_server: %{},
   }
