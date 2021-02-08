@@ -5,8 +5,9 @@
 SERVERS  = 3 # 5
 CLIENTS  = 3 # 5
 CONFIG   = default
-DEBUG    = 3 # 0
+DEBUG    = 1 # 0
 MAX_TIME = 15000
+DEBUG_MODULES = client-replica
 
 START    = Multipaxos.start
 HOST    := 127.0.0.1
@@ -21,7 +22,8 @@ NODE_SUFFIX := ${SECS}_${LOGNAME}@${HOST}
 
 ELIXIR  := elixir --no-halt --cookie ${COOKIE} --name
 MIX 	:= -S mix run -e ${START} \
-	${NODE_SUFFIX} ${MAX_TIME} ${DEBUG} ${SERVERS} ${CLIENTS} ${CONFIG}
+	${NODE_SUFFIX} ${MAX_TIME} ${DEBUG} ${SERVERS} ${CLIENTS} ${CONFIG} \
+	${DEBUG_MODULES}
 
 # --------------------------------------------------------------------
 

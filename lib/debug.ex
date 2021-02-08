@@ -2,7 +2,7 @@
 # distributed algorithms, n.dulay, 29 jan 2021
 # coursework, paxos made moderately complex
 #
-# some helper functions for debugging 
+# some helper functions for debugging
 
 defmodule Debug do
 
@@ -30,5 +30,8 @@ def mapstring(map) do
   for {key, value} <- map, into: "" do "\n  #{key}\t #{inspect value}" end
 end # mapstring
 
-end # Debug
+def module_info(config, message, module, verbose \\ 1) do
+  if Enum.member? config.debug_modules, module do Debug.info(config, message, verbose) end
+end # client_info
 
+end # Debug

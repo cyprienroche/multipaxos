@@ -36,6 +36,8 @@ defp next config, client_num, replicas, sent, quorum do
     sent = sent + 1
     cmd = { self(), sent, transaction }
 
+    Debug.module_info(config, "Client #{config.node_num} sending request #{sent}", :client)
+
     for r <- 1..quorum do
         replica = Enum.at replicas, rem(sent+r, config.n_servers)
         send replica, { :CLIENT_REQUEST, cmd }
@@ -43,15 +45,19 @@ defp next config, client_num, replicas, sent, quorum do
 
     if sent == config.max_requests, do: send self(), :CLIENT_STOP
 
-    receive_replies()
+    receive_replies(config)
     next config, client_num, replicas, sent, quorum
   end
 end # next
 
-defp receive_replies do
+defp receive_replies config do
   receive do
-  { :CLIENT_REPLY, _cid, _result } -> receive_replies()   # discard
-  after 0 -> :return
+  { :CLIENT_REPLY, cid, _result } ->
+
+    Debug.module_info(config, "Client #{config.node_num} received reply for request #{cid}", :client)
+
+    receive_replies(config)   # discard
+  after :infinity -> :return
   end # receive
 end # receive_replies
 
