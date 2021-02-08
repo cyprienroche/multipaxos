@@ -30,27 +30,27 @@ def start config do
 end # start
 
 defp next state do
-  state = receive do
+  receive do
     { :P1A, scout, ballot_num } ->
-      state = if ballot_num > state.ballot_num do
-        AcceptorState.adopt(state, ballot_num)
-      else
-        state
-      end # if
+      state =
+        if ballot_num > state.ballot_num do
+          AcceptorState.adopt(state, ballot_num)
+        else
+          state
+        end # if
       send scout, { :P1B, self(), state.ballot_num, state.accepted }
-      state
+      next(state)
 
     { :P2A, commander, { ballot_num, _slot, _cmd } = pvalue } ->
-      state = if ballot_num == state.ballot_num do
-        AcceptorState.adopt(state, pvalue)
-      else
-        state
-      end # if
+      state =
+        if ballot_num == state.ballot_num do
+          AcceptorState.adopt(state, pvalue)
+        else
+          state
+        end # if
       send commander, { :P2B, self(), state.ballot_num }
-      state
+      next(state)
   end # receive
-
-  next state
 end # next
 
 end # Acceptor

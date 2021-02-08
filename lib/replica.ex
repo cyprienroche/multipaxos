@@ -40,7 +40,6 @@ defp next state do
     { :DECISION, _slot, cmd } ->
       cmd
   end # receive
-
   # propose()
   next state
 end # next

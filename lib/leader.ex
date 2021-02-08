@@ -43,7 +43,6 @@ defp next state do
     { :PREEMPTED, { _count, _from } = ballot_num } ->
       ballot_num
   end # receive
-
   next state
 end # next
 

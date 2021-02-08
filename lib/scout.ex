@@ -20,11 +20,11 @@ defmodule ScoutState do
       wait_for: MapSet.new(acceptors) }
 	end # new
 
-  def add_pvalue(state, pvalues) do
+  def add_pvalues(state, pvalues) do
     %{ state | pvalues: MapSet.union(state.pvalues, pvalues) }
   end # add_pvalue
 
-  def received_from(state, acceptor) do
+  def stop_waiting_for(state, acceptor) do
     %{ state | acceptors: MapSet.delete(state.wait_for, acceptor) }
   end # received_from
 
@@ -43,23 +43,26 @@ def start config, leader, acceptors, ballot_num do
 end # start
 
 defp next state do
-  state = receive do
+  receive do
     { :P1B, acceptor, ballot_num, pvalues } ->
-      state = if ballot_num == state.ballot_num do
+      if ballot_num == state.ballot_num do
         state = ScoutState.add_pvalues(state, pvalues)
-        state = ScoutState.received_from(state, acceptor)
-        if (ScoutState.has_received_from_majority?(state)) do
+        state = ScoutState.stop_waiting_for(state, acceptor)
+        if ScoutState.has_received_from_majority?(state) do
           send state.leader, { :ADOPTED, state.ballot_num, state.pvalues }
+          scout_exit(state)
         end # if
+        next(state)
       else
         send state.leader, { :PREEMPTED, ballot_num }
-        send state.config.monitor,  { :SCOUT_FINISHED, state.config.node_num }
-        Process.exit self(), :normal
+        scout_exit(state)
       end # if
-      state
   end # receive
-
-  next state
 end # next
+
+defp scout_exit state do
+  send state.config.monitor,  { :SCOUT_FINISHED, state.config.node_num }
+  Process.exit(self(), :normal)
+end # scout_exit
 
 end # Scout
