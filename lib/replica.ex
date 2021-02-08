@@ -14,8 +14,11 @@ defmodule ReplicaState do
     decisions: MapSet.new)
 
 	def new(config, database, leaders) do
-		%ReplicaState{ config: config, database: database, leaders: leaders }
-	end
+		%ReplicaState{
+      config: config,
+      database: database,
+      leaders: leaders }
+	end # new
 
 end # ReplicaState
 
