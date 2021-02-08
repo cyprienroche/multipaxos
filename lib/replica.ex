@@ -5,7 +5,7 @@ defmodule ReplicaState do
   @enforce_keys [ :config, :database, :leaders ]
   defstruct(
     config: Map.new,
-    database: 0,
+    database: nil,
     leaders: MapSet.new,
     slot_in: 1,
     slot_out: 1,

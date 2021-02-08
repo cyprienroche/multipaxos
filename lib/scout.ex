@@ -4,9 +4,9 @@
 defmodule ScoutState do
   @enforce_keys [ :leader, :acceptors, :ballot_num ]
   defstruct(
-    leader: 0,
+    leader: nil,
     acceptors: MapSet.new,
-    ballot_num: 0,
+    ballot_num: nil,
     waitfor: MapSet.new,
     pvals: MapSet.new)
 

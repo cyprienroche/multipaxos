@@ -7,7 +7,7 @@ defmodule LeaderState do
     config: Map.new,
     acceptors: MapSet.new,
     replicas: MapSet.new,
-    ballot_num: 0,
+    ballot_num: nil,
     active: false,
     proposals: MapSet.new)
 

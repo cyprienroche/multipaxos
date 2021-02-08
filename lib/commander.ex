@@ -4,10 +4,10 @@
 defmodule CommanderState do
   @enforce_keys [ :leader, :acceptors, :replicas, :pvalue ]
   defstruct(
-    leader: 0,
+    leader: nil,
     acceptors: MapSet.new,
-    replicas: 0,
-    pvalue: MapSet.new,
+    replicas: MapSet.new,
+    pvalue: nil,
     waitfor: MapSet.new)
 
 	def new(leader, acceptors, replicas, pvalue) do
