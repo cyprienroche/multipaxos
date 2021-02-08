@@ -2,7 +2,7 @@
 # cyprienroche 12 feb 2021
 
 defmodule ReplicaState do
-  @enforce_keys [:config, :database, :leaders]
+  @enforce_keys [ :config, :database, :leaders ]
   defstruct(
     config: Map.new,
     database: 0,
@@ -14,7 +14,7 @@ defmodule ReplicaState do
     decisions: MapSet.new)
 
 	def new(config, database, leaders) do
-		%ReplicaState{config: config, database: database, leaders: leaders}
+		%ReplicaState{ config: config, database: database, leaders: leaders }
 	end
 
 end # ReplicaState
@@ -30,12 +30,16 @@ end # start
 
 defp next state do
   receive do
-    {:CLIENT_REQUEST, cmd} -> cmd
+    { :CLIENT_REQUEST, cmd } ->
+      send state.config.monitor, { :CLIENT_REQUEST, state.config.node_num }
+      cmd
 
-    {:DECISION, slot, cmd} -> cmd
+    { :DECISION, _slot, cmd } ->
+      cmd
+  end # receive
 
-  end
-
+  # propose()
+  next state
 end # next
 
 end # Replica
