@@ -6,7 +6,7 @@ defmodule ReplicaState do
   defstruct(
     config: Map.new,
     database: 0,
-    leaders: [],
+    leaders: MapSet.new,
     slot_in: 1,
     slot_out: 1,
     requests: MapSet.new,

@@ -5,8 +5,8 @@ defmodule LeaderState do
   @enforce_keys [ :config, :acceptors, :replicas, :ballot_num ]
   defstruct(
     config: Map.new,
-    acceptors: [],
-    replicas: [],
+    acceptors: MapSet.new,
+    replicas: MapSet.new,
     ballot_num: 0,
     active: false,
     proposals: MapSet.new)
@@ -40,7 +40,7 @@ defp next state do
     { :ADOPTED, _ballot_num, pvals } ->
       pvals
 
-    { :PREEMPTED, { _r, _ } = ballot_num } ->
+    { :PREEMPTED, { _count, _from } = ballot_num } ->
       ballot_num
   end # receive
 
