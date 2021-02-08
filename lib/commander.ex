@@ -9,7 +9,7 @@ defmodule CommanderState do
     acceptors: MapSet.new,
     replicas: MapSet.new,
     pvalue: nil,
-    waitfor: MapSet.new)
+    wait_for: MapSet.new)
 
 	def new(config, leader, acceptors, replicas, pvalue) do
 		%CommanderState{
@@ -18,7 +18,7 @@ defmodule CommanderState do
       acceptors: acceptors,
       replicas: replicas,
       pvalue: pvalue,
-      waitfor: MapSet.new(acceptors) }
+      wait_for: MapSet.new(acceptors) }
 	end # new
 
 end # CommanderState
@@ -27,7 +27,7 @@ defmodule Commander do
 
 def start config, leader, acceptors, replicas, pvalue do
   send config.monitor, { :COMMANDER_SPAWNED, config.node_num }
-  # send p2a request to acceptors
+  
   next CommanderState.new(config, leader, acceptors, replicas, pvalue)
 end # start
 

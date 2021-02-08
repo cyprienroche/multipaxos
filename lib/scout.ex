@@ -8,8 +8,8 @@ defmodule ScoutState do
     leader: nil,
     acceptors: MapSet.new,
     ballot_num: nil,
-    waitfor: MapSet.new,
-    pvals: MapSet.new)
+    wait_for: MapSet.new,
+    pvalues: MapSet.new)
 
 	def new(config, leader, acceptors, ballot_num) do
 		%ScoutState{
@@ -17,8 +17,20 @@ defmodule ScoutState do
       leader: leader,
       acceptors: acceptors,
       ballot_num: ballot_num,
-      waitfor: MapSet.new(acceptors) }
+      wait_for: MapSet.new(acceptors) }
 	end # new
+
+  def add_pvalue(state, pvalues) do
+    %{ state | pvalues: MapSet.union(state.pvalues, pvalues) }
+  end # add_pvalue
+
+  def received_from(state, acceptor) do
+    %{ state | acceptors: MapSet.delete(state.wait_for, acceptor) }
+  end # received_from
+
+  def has_received_from_majority?(state) do
+    MapSet.size(state.wait_for) < MapSet.size(state.acceptors) / 2
+  end # has_received_from_majority
 
 end # ScoutState
 
@@ -26,14 +38,25 @@ defmodule Scout do
 
 def start config, leader, acceptors, ballot_num do
   send config.monitor, { :SCOUT_SPAWNED, config.node_num }
-  # send p1a request to acceptors
+  for acceptor <- acceptors, do: send acceptor, { :P1A, self(), ballot_num }
   next ScoutState.new(config, leader, acceptors, ballot_num)
 end # start
 
 defp next state do
-  receive do
-    { :P1B, _from, _ballot_num, pvalue } ->
-      pvalue
+  state = receive do
+    { :P1B, acceptor, ballot_num, pvalues } ->
+      state = if ballot_num == state.ballot_num do
+        state = ScoutState.add_pvalues(state, pvalues)
+        state = ScoutState.received_from(state, acceptor)
+        if (ScoutState.has_received_from_majority?(state)) do
+          send state.leader, { :ADOPTED, state.ballot_num, state.pvalues }
+        end # if
+      else
+        send state.leader, { :PREEMPTED, ballot_num }
+        send state.config.monitor,  { :SCOUT_FINISHED, state.config.node_num }
+        Process.exit self(), :normal
+      end # if
+      state
   end # receive
 
   next state

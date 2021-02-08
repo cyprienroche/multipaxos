@@ -31,22 +31,22 @@ end # start
 
 defp next state do
   state = receive do
-    { :P1A, from, ballot_num } ->
+    { :P1A, scout, ballot_num } ->
       state = if ballot_num > state.ballot_num do
         AcceptorState.adopt(state, ballot_num)
       else
         state
       end # if
-      send from, { :P1B, self(), state.ballot_num, state.accepted }
+      send scout, { :P1B, self(), state.ballot_num, state.accepted }
       state
 
-    { :P2A, from, { ballot_num, _from, _cmd } = pvalue } ->
+    { :P2A, commander, { ballot_num, _slot, _cmd } = pvalue } ->
       state = if ballot_num == state.ballot_num do
         AcceptorState.adopt(state, pvalue)
       else
         state
       end # if
-      send from, { :P2B, self(), state.ballot_num }
+      send commander, { :P2B, self(), state.ballot_num }
       state
   end # receive
 
