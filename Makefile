@@ -7,7 +7,7 @@ CLIENTS  = 3 # 5
 CONFIG   = default
 DEBUG    = 1 # 0
 MAX_TIME = 15000
-DEBUG_MODULES = client-replica
+DEBUG_MODULES = client-replica-leader-acceptor
 
 START    = Multipaxos.start
 HOST    := 127.0.0.1

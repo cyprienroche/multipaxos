@@ -56,12 +56,15 @@ end # start
 defp next state do
   receive do
     { :PROPOSE, slot, cmd } ->
+      Debug.module_info(state.config, "Leader #{state.config.node_num} received proposal #{inspect {slot, cmd}}", :leader)
       if Map.has_key?(state.proposals, slot) do
         next state
       else
         state = LeaderState.add_proposal(state, slot, cmd)
+        Debug.module_info(state.config, "Leader #{state.config.node_num} is active? #{ if state.active do "active" else "not active" end }", :leader)
         if state.active do
           pvalue = { state.ballot_num, slot, cmd }
+          Debug.module_info(state.config, "Leader #{state.config.node_num} spawned a Commander for #{inspect {slot, cmd}}", :leader)
           spawn Commander, :start,
             [ state.config, self(), state.acceptors, state.replicas, pvalue ]
         end # if
@@ -70,10 +73,13 @@ defp next state do
 
     { :ADOPTED, ballot_num, pvalues } ->
       if ballot_num != state.ballot_num do
+        # ignore this ballot_num, we moved on to another one and spawned another Scout
         next state
       else
+        Debug.module_info(state.config, "Leader #{state.config.node_num} received adopted #{inspect ballot_num}", :leader)
         proposals = merge state.proposals, pmax(pvalues)
         state = LeaderState.update_proposals(state, proposals)
+        Debug.module_info(state.config, "Leader #{state.config.node_num} spawned Commanders for #{inspect ballot_num} and becomes active", :leader)
         for { s, c } <- proposals do
           pvalue = { ballot_num, s, c }
           spawn Commander, :start,
@@ -87,6 +93,7 @@ defp next state do
       if ballot_num <= state.ballot_num do
         next state
       else
+        Debug.module_info(state.config, "Leader #{state.config.node_num} received preemted message and becomes passive", :leader)
         state = LeaderState.become_passive(state)
         state = LeaderState.increase_ballot_num(state)
         # should wait before trying again?

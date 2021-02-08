@@ -9,7 +9,7 @@ defmodule ReplicaState do
     leaders: MapSet.new,
     slot_in: 1,
     slot_out: 1,
-    requests: MapSet.new,
+    requests: [],
     proposals: Map.new,
     decisions: Map.new)
 
@@ -21,16 +21,16 @@ defmodule ReplicaState do
 	end # new
 
   def add_request(state, cmd) do
-    %{ state | requests: MapSet.put(state.requests, cmd) }
+    %{ state | requests: [ cmd | state.requests ] }
   end # add_request
 
   def add_decision(state, slot, cmd) do
     %{ state | decisions: Map.put(state.decisions, slot, cmd) }
   end # add_request
 
-  def has_no_proposals?(state) do
-    not Enum.empty?(state.requests)
-  end # has_no_proposals?
+  def has_no_pending_requests?(state) do
+    Enum.empty?(state.requests)
+  end # has_no_pending_requests?
 
   def has_already_made_decision_for_slot?(state, slot) do
     Map.has_key?(state.decisions, slot)
@@ -41,7 +41,7 @@ defmodule ReplicaState do
   end # increment_slot_in
 
   def pop_request(state) do
-    [ cmd | requests ] = Enum.to_list(state.requests)
+    [ cmd | requests ] = state.requests
     { cmd, %{ state | requests: requests } }
   end # pop_request
 
@@ -99,15 +99,18 @@ defp next state do
 end # next
 
 defp propose state do
-  if ReplicaState.has_no_proposals?(state) do
+  if ReplicaState.has_no_pending_requests?(state) do
+    Debug.module_info(state.config, "Replica #{state.config.node_num} has no proposals", :replica)
     state
   else
     if ReplicaState.has_already_made_decision_for_slot?(state, state.slot_in) do
+      Debug.module_info(state.config, "Replica #{state.config.node_num} already received a decision for #{state.slot_in}", :replica)
       state = ReplicaState.increment_slot_in(state)
       propose state
     end # if
     { cmd, state } = ReplicaState.pop_request(state)
     state = ReplicaState.add_proposal(state, state.slot_in, cmd)
+    Debug.module_info(state.config, "Replica #{state.config.node_num} proposing #{inspect cmd} at slot #{state.slot_in}", :replica)
     for leader <- state.leaders do
       send leader, { :PROPOSE, state.slot_in, cmd }
     end # for
@@ -119,6 +122,7 @@ end # propose
 defp decide state do
   if ReplicaState.has_no_decisions_to_perform?(state) do
     # then slot_out is not a key inside the decisions map
+    Debug.module_info(state.config, "Replica #{state.config.node_num} has no decision to perform", :replica)
     decide state
   else
     slot = state.slot_out
@@ -141,6 +145,7 @@ end # decide
 
 defp perform state, slot, cmd do
   if ReplicaState.has_not_yet_performed_cmd?(state, slot, cmd) do
+    Debug.module_info(state.config, "Replica #{state.config.node_num} performs #{inspect cmd} at slot #{slot}", :replica)
     { client, id, transaction } = cmd
     send state.database, { :EXECUTE,  transaction }
     send client, { :CLIENT_REPLY, id, :ok }

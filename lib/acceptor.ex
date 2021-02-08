@@ -32,22 +32,26 @@ end # start
 defp next state do
   receive do
     { :P1A, scout, ballot_num } ->
+      Debug.module_info(state.config, "Acceptor #{state.config.node_num} received ballot_num #{inspect ballot_num} from a scout", :acceptor)
       state =
         if ballot_num > state.ballot_num do
           AcceptorState.adopt(state, ballot_num)
         else
           state
         end # if
+      Debug.module_info(state.config, "Acceptor #{state.config.node_num} sending ballot_num #{inspect state.ballot_num} to a scout", :acceptor)
       send scout, { :P1B, self(), state.ballot_num, state.accepted }
       next(state)
 
     { :P2A, commander, { ballot_num, _slot, _cmd } = pvalue } ->
+      Debug.module_info(state.config, "Acceptor #{state.config.node_num} received pvalue #{inspect pvalue} from a commander", :acceptor)
       state =
         if ballot_num == state.ballot_num do
           AcceptorState.adopt(state, pvalue)
         else
           state
         end # if
+      Debug.module_info(state.config, "Acceptor #{state.config.node_num} sending ballot_num #{inspect state.ballot_num} to a commander", :acceptor)
       send commander, { :P2B, self(), state.ballot_num }
       next(state)
   end # receive
