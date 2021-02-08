@@ -49,7 +49,7 @@ defp next state do
         state = ScoutState.add_pvalues(state, pvalues)
         state = ScoutState.stop_waiting_for(state, acceptor)
         if ScoutState.has_received_from_majority?(state) do
-          send state.leader, { :ADOPTED, state.ballot_num, state.pvalues }
+          send_adopted_to_leader(state)
           scout_exit(state)
         end # if
         next(state)
@@ -59,6 +59,10 @@ defp next state do
       end # if
   end # receive
 end # next
+
+defp send_adopted_to_leader state do
+  send state.leader, { :ADOPTED, state.ballot_num, state.pvalues }
+end # send_adopted_to_leader
 
 defp scout_exit state do
   send state.config.monitor,  { :SCOUT_FINISHED, state.config.node_num }
