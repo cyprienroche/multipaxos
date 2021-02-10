@@ -2,11 +2,11 @@
 # distributed algorithms, n.dulay, 29 jan 21
 # coursework, paxos made moderately complex
 
-SERVERS  = 1 # 5
-CLIENTS  = 3 # 5
-CONFIG   = default
+SERVERS  = 5 # 5
+CLIENTS  = 1 # 5
+CONFIG   = quorum
 DEBUG    = 0 # 0
-MAX_TIME = 15000
+MAX_TIME = 15000 # 15000
 DEBUG_MODULES = client-replica-database-acceptor-leader-scout-commander
 # client-replica-database-acceptor-leader-scout-commander
 

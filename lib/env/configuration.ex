@@ -32,7 +32,7 @@ def params :default do
   n_accounts:   100,		# number of active bank accounts
   max_amount:   1_000,		# max amount moved between accounts
 
-  print_after:  6_000,		# print transaction log summary every print_after msecs 1_000
+  print_after:  1_000,		# print transaction log summary every print_after msecs
 
   crash_server: %{},
   }
@@ -58,6 +58,34 @@ end
 def params :debug3 do		# same as :default with debug_level: 3
   config = params :default
  _config = Map.put config, :debug_level, 3
+end
+
+def params :one_request do
+  config = params :default
+  config = Map.put config, :client_sleep, :infinity
+ _config = Map.put config, :debug_level, 1
+end
+
+def params :slow do
+  config = params :default
+  config = Map.put config, :client_sleep, 500 # make a request every half second
+  config = Map.put config, :max_requests, 10 # stop after 10 requests sent
+ _config = config
+end
+
+def params :round_robin do
+  config = params :slow
+  _config = Map.put config, :client_send,	:round_robin	# :round_robin, :quorum or :broadcast
+end
+
+def params :quorum do
+  config = params :slow
+  _config = Map.put config, :client_send,	:quorum	# :round_robin, :quorum or :broadcast
+end
+
+def params :broadcast do
+  config = params :slow
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 
 # ADD YOUR OWN PARAMETER FUNCTIONS HERE

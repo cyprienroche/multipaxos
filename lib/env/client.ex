@@ -53,12 +53,11 @@ end # next
 
 defp receive_replies config do
   receive do
-  { :CLIENT_REPLY, cid, _result } ->
+  { :CLIENT_REPLY, cid, result } ->
+    Debug.module_info(config, "Received reply #{result} for request #{cid}")
+    receive_replies(config)
 
-    Debug.module_info(config, "Received reply for request #{cid}")
-
-    receive_replies(config)   # discard
-  after :infinity -> :return
+  after config.client_sleep -> :return
   end # receive
 end # receive_replies
 
