@@ -20,6 +20,7 @@ defp next config, balances, db_seqnum do
     balances = Map.put balances, account2, balance2 - amount
 
     send config.monitor, { :DB_UPDATE, config.node_num, db_seqnum+1, transaction }
+    Debug.module_info(config, "Database #{config.node_num} performed transaction #{inspect transaction}", :database)
     next config, balances, db_seqnum+1
 
   unexpected ->

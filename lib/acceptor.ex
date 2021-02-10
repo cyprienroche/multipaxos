@@ -39,7 +39,7 @@ defp next state do
         else
           state
         end # if
-      Debug.module_info(state.config, "Acceptor #{state.config.node_num} sending ballot_num #{inspect state.ballot_num} to a scout", :acceptor)
+      Debug.module_info(state.config, "Acceptor #{state.config.node_num} now using ballot_num #{inspect state.ballot_num}", :acceptor)
       send scout, { :P1B, self(), state.ballot_num, state.accepted }
       next(state)
 
