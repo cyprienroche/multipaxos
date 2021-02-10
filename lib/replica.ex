@@ -65,13 +65,9 @@ defmodule ReplicaState do
     %{ state | slot_out: state.slot_out + 1 }
   end # increment_slot_out
 
-  def has_performed_cmd_before?(state, slot, cmd) do
+  def has_not_yet_performed_cmd?(state, slot, cmd) do
     Enum.empty?(Enum.filter(state.decisions,
       fn { s, cmd2 } -> s < slot and cmd == cmd2 end))
-  end # has_performed_cmd_before?
-
-  def has_not_yet_performed_cmd?(state, slot, cmd) do
-    not has_performed_cmd_before?(state, slot, cmd)
   end # has_not_yet_performed_cmd?
 
 end # ReplicaState
@@ -89,29 +85,31 @@ end # start
 defp next state do
   receive do
     { :CLIENT_REQUEST, cmd } ->
+      Debug.module_info(state.config, "Received cmd #{inspect cmd}")
       send state.config.monitor, { :CLIENT_REQUEST, state.config.node_num }
       ReplicaState.add_request(state, cmd) |>
       propose |> next
 
     { :DECISION, slot, cmd } ->
-      ReplicaState.add_decidison(state, slot, cmd) |>
+      Debug.module_info(state.config, "Received decision #{inspect cmd} for slot #{slot}")
+      ReplicaState.add_decision(state, slot, cmd) |>
       decide |> propose |> next
   end # receive
 end # next
 
 defp propose state do
   if ReplicaState.has_no_pending_requests?(state) do
-    Debug.module_info(state.config, "Replica #{state.config.node_num} has no proposals")
+    Debug.module_info(state.config, "No more proposals to propose to leaders")
     state
   else
     if ReplicaState.has_already_made_decision_for_slot?(state, state.slot_in) do
-      Debug.module_info(state.config, "Replica #{state.config.node_num} already received a decision for slot #{state.slot_in}")
+      Debug.module_info(state.config, "Already received a decision for slot #{state.slot_in}")
       state = ReplicaState.increment_slot_in(state)
       propose state
     else
       { cmd, state } = ReplicaState.pop_request(state)
       state = ReplicaState.add_proposal(state, state.slot_in, cmd)
-      Debug.module_info(state.config, "Replica #{state.config.node_num} proposing #{inspect cmd} for slot #{state.slot_in}")
+      Debug.module_info(state.config, "Proposing #{inspect cmd} for slot #{state.slot_in}")
       for leader <- state.leaders do
         send leader, { :PROPOSE, state.slot_in, cmd }
       end # for
@@ -124,20 +122,25 @@ end # propose
 defp decide state do
   if ReplicaState.has_no_decisions_to_perform?(state) do
     # then slot_out is not a key inside the decisions map
-    Debug.module_info(state.config, "Replica #{state.config.node_num} has no decision to perform")
-    decide state
+    Debug.module_info(state.config, "No more decisions to perform")
+    state
   else
     slot = state.slot_out
     cmd = state.decisions[slot]
     if ReplicaState.is_not_proposal?(state, slot) do
+      Debug.module_info(state.config, "We never proposed a command for slot #{slot}")
       state = perform state, slot, cmd
       decide state
     else
       cmd_proposed = state.proposals[slot]
       state = ReplicaState.remove_proposal(state, slot)
       state = case cmd do
-        ^cmd_proposed -> state
-        _otherwise    -> ReplicaState.add_request(state, cmd_proposed)
+        ^cmd_proposed ->
+          Debug.module_info(state.config, "Our proposal #{inspect cmd_proposed} for slot #{slot} was accepted")
+          state
+        _otherwise    ->
+          Debug.module_info(state.config, "Our proposal #{inspect cmd_proposed} for slot #{slot} was not accepted, will propose again")
+          ReplicaState.add_request(state, cmd_proposed)
       end # case
       state = perform state, slot, cmd
       decide state
@@ -147,7 +150,7 @@ end # decide
 
 defp perform state, slot, cmd do
   if ReplicaState.has_not_yet_performed_cmd?(state, slot, cmd) do
-    Debug.module_info(state.config, "Replica #{state.config.node_num} performs #{inspect cmd} at slot #{slot}")
+    Debug.module_info(state.config, "Performing #{inspect cmd} for slot #{slot} and sending :ok to client")
     { client, id, transaction } = cmd
     send state.database, { :EXECUTE,  transaction }
     send client, { :CLIENT_REPLY, id, :ok }

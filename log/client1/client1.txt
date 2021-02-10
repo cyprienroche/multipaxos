@@ -1,3 +1,4 @@
 client1 log:
 
-Client 1 sending request 1
+Send request 1 as round_robin
+Received reply for request 1

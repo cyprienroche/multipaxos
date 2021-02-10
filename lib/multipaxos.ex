@@ -32,6 +32,9 @@ defp start(:cluster_start, config) do
     end # for
 
   { replicas, acceptors, leaders } = Util.unzip3(server_modules)
+  leaders = MapSet.new(leaders)
+  acceptors = MapSet.new(acceptors)
+  replicas = MapSet.new(replicas)
 
   for replica <- replicas, do: send replica, { :BIND, leaders }
   for leader  <- leaders,  do: send leader,  { :BIND, acceptors, replicas }

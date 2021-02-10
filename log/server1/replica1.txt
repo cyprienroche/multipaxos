@@ -1,4 +1,10 @@
 replica1 log:
 
-Replica 1 proposing {#PID<16928.137.0>, 1, {:MOVE, 746, 56, 3}} for slot 1
-Replica 1 has no proposals
+Received cmd {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}}
+Proposing {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}} for slot 1
+No more proposals to propose to leaders
+Received decision {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}} for slot 1
+Our proposal {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}} for slot 1 was accepted
+Performing {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}} for slot 1 and sending :ok to client
+No more decisions to perform
+No more proposals to propose to leaders

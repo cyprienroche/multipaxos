@@ -1,4 +1,9 @@
 acceptor1 log:
 
-Acceptor 1 received ballot_num {0, #PID<0.140.0>} from a scout
-Acceptor 1 now using ballot_num {0, #PID<0.140.0>}
+Received ballot_num {0, #PID<0.140.0>} from a scout
+Adopt new ballot_num from a scout
+Now using ballot_num {0, #PID<0.140.0>}
+Send ballot_num {0, #PID<0.140.0>} to a scout
+Received pvalue {{0, #PID<0.140.0>}, 1, {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}}} from a commander
+Accept pvalue from commander
+Send ballot_num {0, #PID<0.140.0>} to commander

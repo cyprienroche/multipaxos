@@ -1,2 +1,4 @@
 database1 log:
 
+Received transaction {:MOVE, 201, 17, 16}
+Performed transaction {:MOVE, 201, 17, 16}

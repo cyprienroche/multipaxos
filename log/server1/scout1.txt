@@ -1,2 +1,8 @@
 scout1 log:
 
+**** New Scout for ballot_num {0, #PID<0.140.0>}
+Send ballot_num {0, #PID<0.140.0>} to acceptors
+Received ballot_num {0, #PID<0.140.0>} from acceptor #PID<0.141.0>
+Received ballot_num was ours
+Received ballot_num {0, #PID<0.140.0>} from a majority of acceptors, send to leader
+**** Scout exit

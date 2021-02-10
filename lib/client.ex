@@ -37,7 +37,7 @@ defp next config, client_num, replicas, sent, quorum do
     sent = sent + 1
     cmd = { self(), sent, transaction }
 
-    Debug.module_info(config, "Client #{config.node_num} sending request #{sent}", :client)
+    Debug.module_info(config, "Send request #{sent} as #{config.client_send}")
 
     for r <- 1..quorum do
         replica = Enum.at replicas, rem(sent+r, config.n_servers)
@@ -55,7 +55,7 @@ defp receive_replies config do
   receive do
   { :CLIENT_REPLY, cid, _result } ->
 
-    Debug.module_info(config, "Client #{config.node_num} received reply for request #{cid}", :client)
+    Debug.module_info(config, "Received reply for request #{cid}")
 
     receive_replies(config)   # discard
   after :infinity -> :return
