@@ -1,0 +1,4 @@
+replica1 log:
+
+Replica 1 proposing {#PID<16928.137.0>, 1, {:MOVE, 746, 56, 3}} for slot 1
+Replica 1 has no proposals

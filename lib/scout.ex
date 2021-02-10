@@ -37,6 +37,7 @@ end # ScoutState
 defmodule Scout do
 
 def start config, leader, acceptors, ballot_num do
+  config = Configuration.start_module(config, :scout)
   send config.monitor, { :SCOUT_SPAWNED, config.node_num }
   for acceptor <- acceptors, do: send acceptor, { :P1A, self(), ballot_num }
   next ScoutState.new(config, leader, acceptors, ballot_num)

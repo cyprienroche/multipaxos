@@ -30,8 +30,32 @@ def mapstring(map) do
   for {key, value} <- map, into: "" do "\n  #{key}\t #{inspect value}" end
 end # mapstring
 
-def module_info(config, message, module, verbose \\ 1) do
-  if Enum.member? config.debug_modules, module do Debug.info(config, message, verbose) end
+def module_info(config, message, _verbose \\ 1) do
+  if Enum.member? config.debug_modules, config.module do
+    IO.puts(config.log, message)
+  end
 end # client_info
+
+def create_main_log_folder() do
+  unless File.exists?('log') do
+      File.mkdir!('log')
+  end # unless
+end # create_main_log_folder
+
+def create_log_folder(config) do
+  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+  unless File.exists?(dir) do
+      File.mkdir!(dir)
+  end # unless
+end # create_log_folder
+
+def create_log_file(config) do
+  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+  name = '#{dir}/#{config.module}#{config.node_num}.txt'
+  Path.expand(name) |> File.write("", [:write])
+  file = File.open!(name, [:utf8, :append])
+  IO.puts(file, "#{config.module}#{config.node_num} log:\n")
+ _config = Map.put config, :log, file
+end
 
 end # Debug

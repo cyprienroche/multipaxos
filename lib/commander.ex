@@ -38,6 +38,7 @@ end # CommanderState
 defmodule Commander do
 
 def start config, leader, acceptors, replicas, pvalue do
+  config = Configuration.start_module(config, :commander)
   send config.monitor, { :COMMANDER_SPAWNED, config.node_num }
   for acceptor <- acceptors, do: send acceptor, { :P2A, self(), pvalue }
   next CommanderState.new(config, leader, acceptors, replicas, pvalue)

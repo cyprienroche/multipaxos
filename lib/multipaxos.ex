@@ -13,6 +13,7 @@ defp start(:cluster_wait, _), do: :skip
 defp start(:cluster_start, config) do
   config = Configuration.node_id(config, "Multipaxos")
   Debug.starting(config)
+  Debug.create_main_log_folder()
 
   # spawn monitoring process and add its process-id to config
   monitor = spawn(Monitor, :start, [config])

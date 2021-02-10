@@ -1,0 +1,4 @@
+acceptor1 log:
+
+Acceptor 1 received ballot_num {0, #PID<0.140.0>} from a scout
+Acceptor 1 now using ballot_num {0, #PID<0.140.0>}

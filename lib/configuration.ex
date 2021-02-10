@@ -14,6 +14,12 @@ def node_id(config, node_type, node_num \\ "") do
   }
 end
 
+def start_module(config, module_type) do
+  config = Map.put config, :module, module_type
+  Debug.create_log_folder(config)
+  _config = Debug.create_log_file(config)
+end # start_module
+
 # -----------------------------------------------------------------------------
 
 def params :default do
@@ -26,7 +32,7 @@ def params :default do
   n_accounts:   100,		# number of active bank accounts
   max_amount:   1_000,		# max amount moved between accounts
 
-  print_after:  5_000,		# print transaction log summary every print_after msecs 1_000
+  print_after:  6_000,		# print transaction log summary every print_after msecs 1_000
 
   crash_server: %{},
   }

@@ -1,0 +1,4 @@
+leader1 log:
+
+Leader 1 received proposal {1, {#PID<16928.137.0>, 1, {:MOVE, 746, 56, 3}}}
+Leader 1 is not active
