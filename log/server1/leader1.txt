@@ -4,7 +4,7 @@ Spawn scout for ballot_num {0, #PID<0.140.0>}
 Received ballot_num {0, #PID<0.140.0>} adopted by our scout
 Received ballot_num {0, #PID<0.140.0>} is the same as our ballot_num {0, #PID<0.140.0>}
 We are now active
-Received proposal {1, {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}}}
-Accept proposal {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}} for slot 1
+Received proposal {1, {#PID<16932.137.0>, 1, {:MOVE, 905, 75, 67}}}
+Accept proposal {#PID<16932.137.0>, 1, {:MOVE, 905, 75, 67}} for slot 1
 We are active with ballot_num {0, #PID<0.140.0>} adopted by scouts
-Spawn one Commander for {1, {#PID<16928.137.0>, 1, {:MOVE, 201, 17, 16}}}
+Spawn one Commander for {1, {#PID<16932.137.0>, 1, {:MOVE, 905, 75, 67}}}
