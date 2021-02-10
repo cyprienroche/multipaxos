@@ -8,6 +8,7 @@ def start config, leader, acceptors, replicas, pvalue do
   Debug.module_info(config, "**** New Commander for pvalue #{inspect pvalue}")
   send config.monitor, { :COMMANDER_SPAWNED, config.node_num }
   Debug.module_info(config, "Send pvalue #{inspect pvalue} to acceptors")
+  # try to get our pvalue accepted . equivalent to 'accept' in Paxos
   for acceptor <- acceptors, do: send acceptor, { :P2A, self(), pvalue }
   next CommanderState.new(config, leader, acceptors, replicas, pvalue)
 end # start
@@ -18,15 +19,19 @@ defp next state do
       Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from acceptors")
       { our_ballot_num, _slot, _cmd } = state.pvalue
       if ballot_num == our_ballot_num do
+        # our pvalue has been acknowledged by acceptor . equivalent to 'accepted' in Paxos
         Debug.module_info(state.config, "Received ballot_num was ours")
         state = CommanderState.stop_waiting_for(state, acceptor)
         if CommanderState.has_received_from_majority?(state) do
+          # if we received from a majority of acceptors, we can move on . we won
           Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from a majority, send to leader")
           send_decision_to_repiclas(state)
           commander_exit(state)
         end # if
+        # else, wait until we get majority
         next(state)
       else
+        # one acceptor did not allow our pvalue to be chosen for this round . Another leader was faster than us
         Debug.module_info(state.config, "Received ballot_num was not ours, send preempted to leader")
         send state.leader, { :PREEMPTED, ballot_num }
         commander_exit(state)

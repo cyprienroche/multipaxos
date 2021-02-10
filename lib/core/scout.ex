@@ -8,6 +8,7 @@ def start config, leader, acceptors, ballot_num do
   Debug.module_info(config, "**** New Scout for ballot_num #{inspect ballot_num}")
   send config.monitor, { :SCOUT_SPAWNED, config.node_num }
   Debug.module_info(config, "Send ballot_num #{inspect ballot_num} to acceptors")
+  # try to be the leader for this ballot_num . equivalent to 'prepare' in Paxos
   for acceptor <- acceptors, do: send acceptor, { :P1A, self(), ballot_num }
   next ScoutState.new(config, leader, acceptors, ballot_num)
 end # start
@@ -17,19 +18,20 @@ defp next state do
     { :P1B, acceptor, ballot_num, pvalues } ->
       Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from acceptor #{inspect acceptor}")
       if ballot_num == state.ballot_num do
+        # we have been acknowledged as the leader by acceptor . equivalent to 'promise' in Paxos
         Debug.module_info(state.config, "Received ballot_num was ours")
         state = ScoutState.add_pvalues(state, pvalues)
         state = ScoutState.stop_waiting_for(state, acceptor)
         if ScoutState.has_received_from_majority?(state) do
+          # if we received from a majority of acceptors, we can move on . we won
           Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from a majority of acceptors, send to leader")
           send_adopted_to_leader(state)
           scout_exit(state)
-        else
-          Debug.module_info(state.config, "Did not receive ballot_num #{inspect ballot_num} from a majority of acceptors yet")
-          Debug.module_info(state.config, "Waiting for #{MapSet.size(state.wait_for)} out of #{MapSet.size(state.acceptors)} acceptors")
         end # if
+        # else, wait until we get majority
         next(state)
       else
+        # one acceptor did not allow us to be the leader for this round . There is another leader already
         Debug.module_info(state.config, "Received ballot_num was not ours, send preempted to leader")
         send state.leader, { :PREEMPTED, ballot_num }
         scout_exit(state)

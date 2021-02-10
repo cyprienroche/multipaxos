@@ -30,3 +30,4 @@ multipaxos-*.tar
 .DS_Store
 
 # Ignore log files
+/log/

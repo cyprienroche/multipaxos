@@ -7,8 +7,8 @@ defmodule ScoutState do
     config: Map.new,
     leader: nil,
     acceptors: MapSet.new,
-    ballot_num: nil,
     wait_for: MapSet.new,
+    ballot_num: nil,
     pvalues: MapSet.new)
 
 	def new(config, leader, acceptors, ballot_num) do

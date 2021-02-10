@@ -5,9 +5,10 @@
 SERVERS  = 1 # 5
 CLIENTS  = 1 # 5
 CONFIG   = default
-DEBUG    = 1 # 0
+DEBUG    = 0 # 0
 MAX_TIME = 15000
-DEBUG_MODULES = client-replica-leader-acceptor-database-scout-commander
+DEBUG_MODULES = client-replica-database-acceptor-leader-scout-commander
+# client-replica-database-acceptor-leader-scout-commander
 
 START    = Multipaxos.start
 HOST    := 127.0.0.1
