@@ -1,4 +1,0 @@
-database1 log:
-
-Received transaction {:MOVE, 905, 75, 67}
-Performed transaction {:MOVE, 905, 75, 67}

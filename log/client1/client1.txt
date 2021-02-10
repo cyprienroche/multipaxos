@@ -1,4 +1,0 @@
-client1 log:
-
-Send request 1 as round_robin
-Received reply for request 1

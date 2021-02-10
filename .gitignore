@@ -28,3 +28,5 @@ multipaxos-*.tar
 
 # Ignore MacOS junk files
 .DS_Store
+
+# Ignore log files

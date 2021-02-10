@@ -1,8 +1,0 @@
-commander1 log:
-
-**** New Commander for pvalue {{0, #PID<0.140.0>}, 1, {#PID<16932.137.0>, 1, {:MOVE, 905, 75, 67}}}
-Send pvalue {{0, #PID<0.140.0>}, 1, {#PID<16932.137.0>, 1, {:MOVE, 905, 75, 67}}} to acceptors
-Received ballot_num {0, #PID<0.140.0>} from acceptors
-Received ballot_num was ours
-Received ballot_num {0, #PID<0.140.0>} from a majority, send to leader
-**** Commander exit
