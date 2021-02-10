@@ -5,7 +5,7 @@ defmodule Commander do
 
 def start config, leader, acceptors, replicas, pvalue do
   config = Configuration.start_module(config, :commander)
-  Debug.module_info(config, "**** New Commander for pvalue #{inspect pvalue}")
+  Debug.module_info(config, "\n--\nNew Commander for pvalue #{inspect pvalue}")
   send config.monitor, { :COMMANDER_SPAWNED, config.node_num }
   Debug.module_info(config, "Send pvalue #{inspect pvalue} to acceptors")
   # try to get our pvalue accepted . equivalent to 'accept' in Paxos
@@ -14,17 +14,17 @@ def start config, leader, acceptors, replicas, pvalue do
 end # start
 
 defp next state do
+  Debug.module_info(state.config, "")
   receive do
     { :P2B, acceptor, ballot_num } ->
       Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from acceptors")
       { our_ballot_num, _slot, _cmd } = state.pvalue
       if ballot_num == our_ballot_num do
         # our pvalue has been acknowledged by acceptor . equivalent to 'accepted' in Paxos
-        Debug.module_info(state.config, "Received ballot_num was ours")
         state = CommanderState.stop_waiting_for(state, acceptor)
         if CommanderState.has_received_from_majority?(state) do
           # if we received from a majority of acceptors, we can move on . we won
-          Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from a majority, send to leader")
+          Debug.module_info(state.config, "Received ballot_num #{inspect ballot_num} from a majority of acceptors, send to replicas")
           send_decision_to_repiclas(state)
           commander_exit(state)
         end # if
@@ -51,7 +51,7 @@ defp send_decision_to_repiclas state do
 end # send_decision_to_repiclas
 
 defp commander_exit state do
-  Debug.module_info(state.config, "**** Commander exit")
+  Debug.module_info(state.config, "Commander exit\n--\n")
   send state.config.monitor,  { :COMMANDER_FINISHED, state.config.node_num }
   Process.exit(self(), :normal)
 end # commander_exit

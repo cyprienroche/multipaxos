@@ -3,7 +3,7 @@
 # coursework, paxos made moderately complex
 
 SERVERS  = 1 # 5
-CLIENTS  = 1 # 5
+CLIENTS  = 3 # 5
 CONFIG   = default
 DEBUG    = 0 # 0
 MAX_TIME = 15000
@@ -28,7 +28,7 @@ MIX 	:= -S mix run -e ${START} \
 
 # --------------------------------------------------------------------
 
-run cluster: compile
+run cluster: clear_log compile
 	@ ${ELIXIR} server1_${NODE_SUFFIX} ${MIX} cluster_wait &
 	@ ${ELIXIR} server2_${NODE_SUFFIX} ${MIX} cluster_wait &
 	@ ${ELIXIR} server3_${NODE_SUFFIX} ${MIX} cluster_wait &
@@ -46,9 +46,13 @@ run cluster: compile
 compile:
 	mix compile
 
-clean:
+clean: clear_log
 	mix clean
 	@rm -f erl_crash.dump
+
+clear_log:
+	@echo 'removing log' &
+	@rm -rf log/
 
 ps:
 	@echo ------------------------------------------------------------

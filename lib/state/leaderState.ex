@@ -20,7 +20,7 @@ defmodule LeaderState do
 	end # new
 
   def add_proposal(state, slot, cmd) do
-    %{ state | proposals: Map.put(state, slot, cmd) }
+    %{ state | proposals: Map.put(state.proposals, slot, cmd) }
   end # add_proposal
 
   def update_proposals(state, proposals) do

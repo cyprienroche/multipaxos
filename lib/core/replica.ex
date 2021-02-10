@@ -12,6 +12,7 @@ def start config, database do
 end # start
 
 defp next state do
+  Debug.module_info(state.config, "")
   receive do
     { :CLIENT_REQUEST, cmd } ->
       Debug.module_info(state.config, "Received cmd #{inspect cmd}")

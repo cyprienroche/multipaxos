@@ -52,10 +52,17 @@ end # create_log_folder
 def create_log_file(config) do
   dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
   name = '#{dir}/#{config.module}#{config.node_num}.txt'
-  Path.expand(name) |> File.write("", [:write])
+  unless File.exists?(name) do
+    Path.expand(name) |> File.write("", [:write])
+  end # unless
   file = File.open!(name, [:utf8, :append])
   IO.puts(file, "#{config.module}#{config.node_num} log:\n")
  _config = Map.put config, :log, file
+end
+
+def special_log_file(config, count) do
+# could use this function to create new log files for every commander and scout spawned
+# count how many commanders were spawned and append the count to the name of the file
 end
 
 end # Debug

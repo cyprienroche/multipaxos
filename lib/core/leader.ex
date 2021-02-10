@@ -16,9 +16,10 @@ def start config do
 end # start
 
 defp next state do
+  Debug.module_info(state.config, "")
   receive do
     { :PROPOSE, slot, cmd } ->
-      Debug.module_info(state.config, "Received proposal #{inspect {slot, cmd}}")
+      Debug.module_info(state.config, "Received proposal #{inspect {slot, cmd}} from a replica")
       if Map.has_key?(state.proposals, slot) do
         # already have a proposal for this slot, ignore this proposal
         Debug.module_info(state.config, "Already have a proposal for slot #{slot}, ignoring proposal #{inspect cmd}")
@@ -30,7 +31,7 @@ defp next state do
         Debug.module_info(state.config, "We are #{ if state.active do
             "active with ballot_num #{inspect state.ballot_num} adopted by scouts"
           else
-            "not active, waiting to hear from Scouts for our ballot_num #{inspect state.ballot_num}"
+            "not active, waiting to hear from Scouts for our current ballot_num #{inspect state.ballot_num}"
           end }")
         if state.active do
           # have been elected to be the leader for a ballot_num and we can now decide the command for this slot
