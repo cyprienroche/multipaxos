@@ -61,8 +61,10 @@ defp next state do
           spawn Commander, :start,
             [ state.config, self(), state.acceptors, state.replicas, pvalue ]
         end # for
-        Debug.module_info(state.config, "We are now active")
         state = LeaderState.become_active(state)
+        Debug.module_info(state.config, "We are now active")
+        state = LeaderState.decrease_timeout(state)
+        Debug.module_info(state.config, "Timeout is now #{state.timeout}")
         next state
       end # if
 
@@ -76,12 +78,14 @@ defp next state do
         # something went wrong, we did not get the majority of votes
         Debug.module_info(state.config, "Become passive")
         state = LeaderState.become_passive(state)
+        Process.sleep(state.timeout)
         state = LeaderState.increase_ballot_num(state)
-        # TODO should wait before trying again? ******************************************************************************************************
         Debug.module_info(state.config, "Spawn new Scout for new ballot_num #{inspect state.ballot_num}")
         # try to be the leader again
         spawn Scout, :start,
           [ state.config, self(), state.acceptors, state.ballot_num ]
+        state = LeaderState.increase_timeout(state)
+        Debug.module_info(state.config, "Timeout is now #{state.timeout}")
         next state
       end # if
   end # receive

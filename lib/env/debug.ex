@@ -60,9 +60,4 @@ def create_log_file(config) do
  _config = Map.put config, :log, file
 end
 
-def special_log_file(_config, _map_count) do
-# could use this function to create new log files for every commander and scout spawned
-# count how many commanders were spawned and append the count to the name of the file
-end
-
 end # Debug

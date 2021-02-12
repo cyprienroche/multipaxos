@@ -35,6 +35,11 @@ def params :default do
   print_after:  1_000,		# print transaction log summary every print_after msecs
 
   crash_server: %{},
+
+  initial_timeout: 500, # initial timeout before a leader tries to get a new ballot_num
+  timeout_factor: 1.5,
+  timeout_constant: 100,
+
   }
 end
 
@@ -60,11 +65,37 @@ def params :debug3 do		# same as :default with debug_level: 3
  _config = Map.put config, :debug_level, 3
 end
 
-def params :one_request do
+def params :one_request_round_robin do # works
   config = params :default
-  config = Map.put config, :client_sleep, :infinity
- _config = Map.put config, :debug_level, 1
+  config = Map.put config, :max_requests, 1 # stop after 1 requests sent
+  _config = Map.put config, :client_send,	:round_robin	# :round_robin, :quorum or :broadcast
 end
+
+def params :one_request_quorum do # works
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
+  config = Map.put config, :max_requests, 1 # stop after 1 requests sent
+  _config = Map.put config, :client_send,	:quorum	# :round_robin, :quorum or :broadcast
+end
+
+def params :one_request_broadcast do # works
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
+  config = Map.put config, :max_requests, 1 # stop after 1 requests sent
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
+end
+
+def params :slow_broadcast do # doesnt work
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
+  config = Map.put config, :client_sleep, 50
+  config = Map.put config, :max_requests, 50 # stop after 1 requests sent
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
+end
+
+
+ # ---------------------- TODO ----------------
+
 
 def params :slow do
   config = params :default
