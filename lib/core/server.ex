@@ -6,6 +6,7 @@ defmodule Server do
 
 def start config, server_num, multipaxos do
   config = Configuration.node_id(config, "Server", server_num)
+  Debug.create_log_folder(config, :server)
   Debug.starting(config)
 
   database = spawn Database, :start, [config]

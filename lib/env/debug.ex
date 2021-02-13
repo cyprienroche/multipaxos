@@ -36,28 +36,49 @@ def module_info(config, message, _verbose \\ 1) do
   end
 end # client_info
 
-def create_main_log_folder() do
-  unless File.exists?('log') do
-      File.mkdir!('log')
-  end # unless
-end # create_main_log_folder
+# -- folder functions --
 
-def create_log_folder(config) do
-  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+def create_folder(dir) do
   unless File.exists?(dir) do
       File.mkdir!(dir)
   end # unless
+end # create_folder
+
+def create_main_log_folder(), do: create_folder('log')
+
+def create_log_folder(config, node_type) do
+  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+  create_folder(dir)
+  if (node_type == :server) do
+    create_folder("#{dir}/commander#{config.node_num}")
+    create_folder("#{dir}/scout#{config.node_num}")
+  end # if
 end # create_log_folder
 
-def create_log_file(config) do
-  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
-  name = '#{dir}/#{config.module}#{config.node_num}.txt'
-  unless File.exists?(name) do
-    Path.expand(name) |> File.write("", [:write])
+# -- file functions --
+
+defp create_log_file(config, dir, module_name) do
+  file_name = '#{dir}/#{module_name}.txt'
+  unless File.exists?(file_name) do
+    Path.expand(file_name) |> File.write("", [:write])
   end # unless
-  file = File.open!(name, [:utf8, :append])
-  IO.puts(file, "#{config.module}#{config.node_num} log:\n")
+  file = File.open!(file_name, [:utf8, :append])
+  IO.puts(file, "#{module_name} log:\n")
  _config = Map.put config, :log, file
-end
+end # create_log_file
+
+def create_module_log_file(config, name_extension) do
+  # used for commander and scout
+  name = '#{config.module}#{config.node_num}'
+  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+  _config = create_log_file(config, "#{dir}/#{name}", "#{name}_#{name_extension}")
+end # create_module_log_file
+
+def create_module_log_file(config) do
+  # used for client, replica, leader, and acceptor
+  name = '#{config.module}#{config.node_num}'
+  dir = "log/#{String.downcase(config.node_type)}#{config.node_num}"
+  _config = create_log_file(config, dir, name)
+end # create_module_log_file
 
 end # Debug

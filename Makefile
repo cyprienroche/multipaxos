@@ -4,7 +4,7 @@
 
 SERVERS  = 5 # 5
 CLIENTS  = 5 # 5
-CONFIG   = one_request_broadcast # default
+CONFIG   = slow_broadcast # default
 DEBUG    = 0 # 0
 MAX_TIME = 15000 # 15000
 DEBUG_MODULES = client-replica-database-acceptor-leader-scout-commander

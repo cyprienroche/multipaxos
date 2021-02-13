@@ -6,6 +6,7 @@ defmodule Client do
 
 def start config, client_num, replicas do
   config = Configuration.node_id(config, "Client", client_num)
+  Debug.create_log_folder(config, :client)
   config = Configuration.start_module(config, :client)
   Debug.starting(config)
   Process.send_after self(), :CLIENT_STOP, config.client_stop

@@ -16,8 +16,12 @@ end
 
 def start_module(config, module_type) do
   config = Map.put config, :module, module_type
-  Debug.create_log_folder(config)
-  _config = Debug.create_log_file(config)
+  _config = Debug.create_module_log_file(config)
+end # start_module
+
+def start_module(config, module_type, name_extension) do
+  config = Map.put config, :module, module_type
+  _config = Debug.create_module_log_file(config, name_extension)
 end # start_module
 
 # -----------------------------------------------------------------------------
@@ -37,8 +41,8 @@ def params :default do
   crash_server: %{},
 
   initial_timeout: 500, # initial timeout before a leader tries to get a new ballot_num
-  timeout_factor: 1.5,
-  timeout_constant: 100,
+  timeout_factor: 1.1,
+  timeout_constant: 110,
 
   }
 end
@@ -85,7 +89,7 @@ def params :one_request_broadcast do # works
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 
-def params :slow_broadcast do # doesnt work
+def params :slow_broadcast do # doesnt work..?
 # note: don't look at lag, look at client requests and db updates
   config = params :default
   config = Map.put config, :client_sleep, 50

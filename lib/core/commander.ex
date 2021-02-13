@@ -4,8 +4,9 @@
 defmodule Commander do
 
 def start config, leader, acceptors, replicas, pvalue do
-  config = Configuration.start_module(config, :commander)
-  Debug.module_info(config, "\n--\nNew Commander for pvalue #{inspect pvalue}")
+  { { count, _from } = _ballot_num, slot, _cmd } = pvalue
+  config = Configuration.start_module(config, :commander, "_ballot#{count}_slot#{slot}")
+  Debug.module_info(config, "New Commander for pvalue #{inspect pvalue}")
   send config.monitor, { :COMMANDER_SPAWNED, config.node_num }
   Debug.module_info(config, "Send pvalue #{inspect pvalue} to acceptors")
   # try to get our pvalue accepted . equivalent to 'accept' in Paxos
@@ -51,7 +52,7 @@ defp send_decision_to_repiclas state do
 end # send_decision_to_repiclas
 
 defp commander_exit state do
-  Debug.module_info(state.config, "Commander exit\n--\n")
+  Debug.module_info(state.config, "Commander exit")
   send state.config.monitor,  { :COMMANDER_FINISHED, state.config.node_num }
   Process.exit(self(), :normal)
 end # commander_exit
