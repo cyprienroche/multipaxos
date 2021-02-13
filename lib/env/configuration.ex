@@ -40,9 +40,10 @@ def params :default do
 
   crash_server: %{},
 
-  initial_timeout: 500, # initial timeout before a leader tries to get a new ballot_num
-  timeout_factor: 1.1,
-  timeout_constant: 110,
+  init_timeout: 400, # initial timeout a leader might wait before it tries to get a new ballot_num
+  min_timeout: 100, # minimum timeout a leader might wait before it tries to get a new ballot_num
+  timeout_factor: 1.5,
+  timeout_constant: 150,
 
   }
 end
@@ -89,11 +90,18 @@ def params :one_request_broadcast do # works
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 
+def params :many_requests_broadcast do # doesnt work
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
+  config = Map.put config, :max_requests, 2 # stop after 1 requests sent
+  _config = Map.put config, :client_send,	:round_robin	# :round_robin, :quorum or :broadcast
+end
+
 def params :slow_broadcast do # doesnt work..?
 # note: don't look at lag, look at client requests and db updates
   config = params :default
   config = Map.put config, :client_sleep, 50
-  config = Map.put config, :max_requests, 50 # stop after 1 requests sent
+  config = Map.put config, :max_requests, 20 # stop after 1 requests sent
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 

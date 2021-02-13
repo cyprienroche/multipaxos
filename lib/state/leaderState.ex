@@ -10,7 +10,8 @@ defmodule LeaderState do
     ballot_num: nil,
     active: false,
     proposals: Map.new,
-    timeout: 0)
+    timeout: 0,
+    max_timeout: 0)
 
 	def new(config, acceptors, replicas, ballot_num) do
 		%LeaderState{
@@ -18,7 +19,8 @@ defmodule LeaderState do
       acceptors: acceptors,
       replicas: replicas,
       ballot_num: ballot_num,
-      timeout: config.initial_timeout }
+      timeout: config.init_timeout,
+      max_timeout: config.init_timeout }
 	end # new
 
   # -- proposals functions --
@@ -51,14 +53,19 @@ defmodule LeaderState do
   # -- timeout functions --
 
   def increase_timeout(state) do
-    t = round(state.timeout * state.config.timeout_factor)
-    %{ state | timeout: t }
+    max_timeout = round(state.max_timeout * state.config.timeout_factor)
+    %{ state | max_timeout: max_timeout } |> set_next_timeout
   end # increase_timeout
 
   def decrease_timeout(state) do
-    t = max 0, round(state.timeout - state.config.timeout_constant)
-    %{ state | timeout: t }
+    max_timeout = round(state.max_timeout - state.config.timeout_constant)
+    %{ state | max_timeout: max_timeout } |> set_next_timeout
   end # decrease_timeout
+
+  defp set_next_timeout(state) do
+    t = Enum.random(state.config.min_timeout..state.max_timeout)
+    %{ state | timeout: t }
+  end
 
 
 end # LeaderState
