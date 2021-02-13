@@ -64,12 +64,12 @@ defp next state do
         state = LeaderState.become_active(state)
         Debug.module_info(state.config, "We are now active")
         state = LeaderState.decrease_timeout(state)
-        Debug.module_info(state.config, "Timeout is now #{state.timeout}")
+        Debug.module_info(state.config, "Timeout=#{state.timeout}; max_timeout=#{state.max_timeout}; min_timeout=#{state.config.min_timeout}")
         next state
       end # if
 
     { :PREEMPTED, { _count, _from } = ballot_num } ->
-      Debug.module_info(state.config, "Received preemted message for ballot_num #{inspect ballot_num}")
+      Debug.module_info(state.config, "Received preempted message for ballot_num #{inspect ballot_num}")
       if ballot_num <= state.ballot_num do
         # we moved on to another ballot_num
         Debug.module_info(state.config, "Ignore ballot_num #{inspect ballot_num} since we moved on to ballot_num #{inspect state.ballot_num}")
@@ -86,7 +86,7 @@ defp next state do
         spawn Scout, :start,
           [ state.config, self(), state.acceptors, state.ballot_num ]
         state = LeaderState.increase_timeout(state)
-        Debug.module_info(state.config, "Timeout is now #{state.timeout}")
+        Debug.module_info(state.config, "Timeout=#{state.timeout}; max_timeout=#{state.max_timeout}; min_timeout=#{state.config.min_timeout}")
         next state
       end # if
   end # receive

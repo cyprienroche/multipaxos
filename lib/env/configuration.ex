@@ -90,47 +90,32 @@ def params :one_request_broadcast do # works
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 
-def params :many_requests_broadcast do # doesnt work
+def params :two_requests_broadcast do # works
 # note: don't look at lag, look at client requests and db updates
   config = params :default
-  config = Map.put config, :max_requests, 2 # stop after 1 requests sent
-  _config = Map.put config, :client_send,	:round_robin	# :round_robin, :quorum or :broadcast
+  config = Map.put config, :max_requests, 2 # each db should do 2 * 5 = 10 updates
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
 
-def params :slow_broadcast do # doesnt work..?
+def params :five_requests_broadcast do # works 2/3 of the time with 5 servers
 # note: don't look at lag, look at client requests and db updates
   config = params :default
-  config = Map.put config, :client_sleep, 50
+  config = Map.put config, :max_requests, 5 # each db should do 5 * 5 = 25 updates
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
+end
+
+def params :ten_requests_broadcast do # works with 2 servers
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
+  config = Map.put config, :max_requests, 10 # each db should do 10 * 5 = 50 updates
+  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
+end
+
+def params :twenty_requests_broadcast do # works with 2 servers
+# note: don't look at lag, look at client requests and db updates
+  config = params :default
   config = Map.put config, :max_requests, 20 # stop after 1 requests sent
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
 end
-
-
- # ---------------------- TODO ----------------
-
-
-def params :slow do
-  config = params :default
-  config = Map.put config, :client_sleep, 500 # make a request every half second
-  config = Map.put config, :max_requests, 10 # stop after 10 requests sent
- _config = config
-end
-
-def params :round_robin do
-  config = params :slow
-  _config = Map.put config, :client_send,	:round_robin	# :round_robin, :quorum or :broadcast
-end
-
-def params :quorum do
-  config = params :slow
-  _config = Map.put config, :client_send,	:quorum	# :round_robin, :quorum or :broadcast
-end
-
-def params :broadcast do
-  config = params :slow
-  _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
-end
-
-# ADD YOUR OWN PARAMETER FUNCTIONS HERE
 
 end # module ----------------------------------------------------------------

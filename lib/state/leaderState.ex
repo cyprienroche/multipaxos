@@ -58,12 +58,14 @@ defmodule LeaderState do
   end # increase_timeout
 
   def decrease_timeout(state) do
-    max_timeout = round(state.max_timeout - state.config.timeout_constant)
+    max_timeout = max state.config.min_timeout,
+                      round(state.max_timeout - state.config.timeout_constant)
     %{ state | max_timeout: max_timeout } |> set_next_timeout
   end # decrease_timeout
 
   defp set_next_timeout(state) do
     t = Enum.random(state.config.min_timeout..state.max_timeout)
+    # t = max state.config.min_timeout, state.max_timeout + (Enum.random(-10..10) * 10)
     %{ state | timeout: t }
   end
 
