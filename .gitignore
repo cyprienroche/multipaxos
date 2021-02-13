@@ -31,3 +31,6 @@ multipaxos-*.tar
 
 # Ignore log files
 /log/
+
+# Ignore zip files
+*.zip
