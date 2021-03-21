@@ -32,7 +32,7 @@ Parameter, such as the time each client sleeps before sending its next request, 
 
 ## Debugging and testing methodology
 
-All the debugging is made using the *Debug* module. It contains useful functions that are triggered only at certain debugging levels. It also contains the *module_info/3* function, which is heavily used throughout the implementation. Whether a module writes to its log can be turned on and off using the Makefile, by changing the DEBUG_MODULES variable and only including modules that should write to their log file there.
+All the debugging is made using the *Debug* module. It contains useful functions that are triggered only at certain debugging levels. It also contains the *module_info/3* function, which is heavily used throughout the implementation. Whether a module writes to its log can be turned on and off using the Makefile, by changing the *DEBUG_MODULES* variable and only including modules that should write to their log file there.
 
 The *Server* and *Client* use the *create_log_folder/2* function to create a log folder for the subsequent modules to then add their log files to using the *Configuration.start_module/2* function. Note that the Scout files have an extension to their name, which is the ballot number they were spawned for. Similarly, the *Commander* file names are extended with the ballot number as well as the slot for which they were spawned. This makes it possible for multiple *Commander* to run concurrently without having to implement any locking mechanism for writing to their log since they each have their unique file.
 
@@ -40,7 +40,7 @@ The log can be removed using the *make clean_log* command. The log is deleted ev
 
 ## Example outputs
 ```
-1 *Server*, 5 *Client*, round_robin, 1 request max per *Client*
+1 Server, 5 Client, round_robin, 1 request max per Client
 time = 15000 db updates done = [{1, 5}] time = 15000 client requests seen = [{1, 5}]
 ```
 In this run, there is 1 server and 5 client, so there is only 1 database.
@@ -50,7 +50,7 @@ Db updates done is a map from a server id to the number of database updates done
 Here, we see server 1's database has done 5 client requests.
 
 ```
-5 *Server*, 5 *Client*, round_robin, 1 request max per *Client*
+5 Server, 5 Client, round_robin, 1 request max per Client
 time = 15000 db updates done = [{1, 5}, {2, 5}, {3, 5}, {4, 5}, {5, 5}] time = 15000 client requests seen = [{3, 5}]
 ```
 In this run, we now have 5 servers and 5 clients.
@@ -59,7 +59,7 @@ This can be seen in the above output since client requests seen = [{3,5}].
 Db updates done shows us that every server was notified of the client requests and updated their database accordingly.
 
 ```
-5 *Server*, 5 *Client*, broadcast, 5 request max per *Client*
+5 Server, 5 Client, broadcast, 5 request max per Client
 time = 15000 db updates done = [{1, 25}, {2, 25}, {3, 25}, {4, 25}, {5, 25}] time = 15000 client requests seen = [{1, 25}, {2, 25}, {3, 25}, {4, 25}, {5, 25}]
 ```
 Here is a last example, with 5 servers and 5 clients.
