@@ -25,20 +25,20 @@ end # start_module
 
 def params :default do
   %{
-  max_requests: 5_000,		# max requests each client will make
-  client_sleep: 2,		# time (ms) to sleep before sending new request
-  client_stop:  60_000,		# time (ms) to stop sending further requests
+  max_requests: 5,	        	# max requests each client will make
+  client_sleep: 2,		        # time (ms) to sleep before sending new request
+  client_stop:  20_000,		    # time (ms) to stop sending further requests
   client_send:	:round_robin,	# :round_robin, :quorum or :broadcast
 
-  n_accounts:   100,		# number of active bank accounts
-  max_amount:   1_000,		# max amount moved between accounts
+  n_accounts:   100,		      # number of active bank accounts
+  max_amount:   1_000,	    	# max amount moved between accounts
 
-  print_after:  1_000,		# print transaction log summary every print_after msecs
+  print_after:  1_000,		    # print transaction log summary every print_after msecs
 
   crash_server: %{},
 
-  init_timeout: 400, # initial timeout a leader might wait before it tries to get a new ballot_num
-  min_timeout: 1, # minimum timeout a leader might wait before it tries to get a new ballot_num
+  init_timeout: 400,          # initial timeout a leader might wait before it tries to get a new ballot_num
+  min_timeout: 1,             # minimum timeout a leader might wait before it tries to get a new ballot_num
   timeout_factor: 1.5,
   timeout_constant: 150,
 
