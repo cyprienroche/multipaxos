@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule Leader do
 
 def start config do
@@ -94,21 +92,6 @@ end # next
 
 
 # -------------- helper functions --------------
-
-defp spawn_commander(state, pvalue) do
-  Debug.module_info(state.config, "Spawn Commanders for pvalue #{inspect pvalue}")
-  spawn Commander, :start,
-    [ state.config, self(), state.acceptors, state.replicas, pvalue ]
-  state
-end # spawn_commander
-
-defp spawn_scout(state) do
-  Debug.module_info(state.config, "Spawn new Scout for new ballot_num #{inspect state.ballot_num}")
-  # try to be the leader again
-  spawn Scout, :start,
-    [ state.config, self(), state.acceptors, state.ballot_num ]
-  state
-end # spawn_scout
 
 defp pmax pvalues do
   # determines for each slot the command corresponding to

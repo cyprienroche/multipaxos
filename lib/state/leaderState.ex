@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule LeaderState do
   @enforce_keys [ :config, :acceptors, :replicas, :ballot_num ]
   defstruct(

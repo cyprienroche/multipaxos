@@ -1,7 +1,4 @@
 
-# distributed algorithms, n.dulay 29 jan 2021
-# coursework, paxos made moderately complex
-
 defmodule Configuration do
 
 def node_id(config, node_type, node_num \\ "") do
@@ -41,7 +38,7 @@ def params :default do
   crash_server: %{},
 
   init_timeout: 400, # initial timeout a leader might wait before it tries to get a new ballot_num
-  min_timeout: 100, # minimum timeout a leader might wait before it tries to get a new ballot_num
+  min_timeout: 1, # minimum timeout a leader might wait before it tries to get a new ballot_num
   timeout_factor: 1.5,
   timeout_constant: 150,
 
@@ -116,6 +113,16 @@ def params :twenty_requests_broadcast do # works with 2 servers
   config = params :default
   config = Map.put config, :max_requests, 20 # stop after 1 requests sent
   _config = Map.put config, :client_send,	:broadcast	# :round_robin, :quorum or :broadcast
+end
+
+def params :crash_server_1 do # works
+  config = params :default
+  _config = Map.put config, :crash_server, %{1 => 1}
+end
+
+def params :crash_server_4_and_5 do # works
+  config = params :default
+  _config = Map.put config, :crash_server, %{4 => 5000, 5 => 10000}
 end
 
 end # module ----------------------------------------------------------------

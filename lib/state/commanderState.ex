@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule CommanderState do
   @enforce_keys [ :config, :leader, :acceptors, :replicas, :pvalue ]
   defstruct(

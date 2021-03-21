@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule ScoutState do
   @enforce_keys [ :config, :leader, :acceptors, :ballot_num ]
   defstruct(

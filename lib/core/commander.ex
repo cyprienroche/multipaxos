@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule Commander do
 
 def start config, leader, acceptors, replicas, pvalue do

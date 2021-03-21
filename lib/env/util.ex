@@ -1,7 +1,4 @@
 
-# distributed algorithms, n.dulay, 29 jan 2021
-# coursework, paxos made moderately complex
-#
 # various helper functions
 
 defmodule Util do

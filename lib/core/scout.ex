@@ -1,6 +1,4 @@
 
-# cyprienroche 12 feb 2021
-
 defmodule Scout do
 
 def start config, leader, acceptors, ballot_num do

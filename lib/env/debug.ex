@@ -1,8 +1,5 @@
 
-# distributed algorithms, n.dulay, 29 jan 2021
-# coursework, paxos made moderately complex
-#
-# some helper functions for debugging
+# helper functions for debugging
 
 defmodule Debug do
 
@@ -58,13 +55,17 @@ end # create_log_folder
 # -- file functions --
 
 defp create_log_file(config, dir, module_name) do
-  file_name = '#{dir}/#{module_name}.txt'
-  unless File.exists?(file_name) do
-    Path.expand(file_name) |> File.write("", [:write])
-  end # unless
-  file = File.open!(file_name, [:utf8, :append])
-  IO.puts(file, "#{module_name} log:\n")
- _config = Map.put config, :log, file
+  if Enum.member? config.debug_modules, config.module do
+    file_name = '#{dir}/#{module_name}.txt'
+    unless File.exists?(file_name) do
+      Path.expand(file_name) |> File.write("", [:write])
+    end # unless
+    file = File.open!(file_name, [:utf8, :append])
+    IO.puts(file, "#{module_name} log:\n")
+   _config = Map.put config, :log, file
+  else
+    config
+  end
 end # create_log_file
 
 def create_module_log_file(config, name_extension) do
